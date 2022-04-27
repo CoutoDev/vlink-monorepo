@@ -11,34 +11,36 @@ const package = require('./package.json')
 program.version(package.version);
 
 program
-  .command('vlink [componentFolder]')
+  .command('link [componentFolder]')
   .description('Link VTEX IO components')
-  .action(async (componentFolder = '.') => {
+  .option('-fix, --vfix [vfix]', false, 'Unlink and then link again')
+  .action(async (componentFolder, options) => {
     const data = {
       scripts: []
     };
     const scriptList = [];
 
-    if (componentFolder === '.') {
-      console.log(componentFolder);
+    componentFolder = componentFolder ?? '.'
 
-      for await (const file of getFiles(componentFolder)) {
-        let relativePath = relative(componentFolder, file)
+    for await (const file of getFiles(componentFolder)) {
+      let relativePath = relative(componentFolder, file)
 
-        scriptList.push({
-          vlink: `\"yarn vlink:${relativePath}\"`,
-          vfix: `\"yarn vfix:${relativePath}\"`
-        })
+      scriptList.push({
+        vlink: `\"yarn vlink:${relativePath}\"`,
+        vfix: `\"yarn vfix:${relativePath}\"`
+      })
 
-        data.scripts[`vlink:${relativePath}`] = `cd ${relativePath} && vtex link`
-        data.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
+      data.scripts[`vlink:${relativePath}`] = `cd ${relativePath} && vtex link`
+      data.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
 
-        data.scripts.vlink = `yarn concurrently ${concatScripts(scriptList).vlink}`
-        data.scripts.vfix = `yarn concurrently ${concatScripts(scriptList).vfix}`
-      }
+      data.scripts.vlink = `yarn concurrently ${concatScripts(scriptList).vlink}`
+      data.scripts.vfix = `yarn concurrently ${concatScripts(scriptList).vfix}`
+    }
 
-      console.log(data.scripts.vlink)
+    if (!options.vfix) {
       shell.exec(data.scripts.vlink)
+    } else {
+      shell.exec(data.scripts.vfix)
     }
   });
 
