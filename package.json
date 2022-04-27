@@ -1,6 +1,6 @@
 {
   "name": "vlink-monorepo",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A CLI Tool to help you to manage your linked VTEX IO components on monorepo projects",
   "main": "vlink.js",
   "repository": "git@github.com:CoutoDev/vlink-monorepo.git",
