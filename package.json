@@ -6,12 +6,17 @@
   "repository": "git@github.com:CoutoDev/vlink-monorepo.git",
   "author": "CoutoDev",
   "license": "MIT",
+  "bin": {
+    "vlink": "vlink.js"
+  },
   "dependencies": {
     "chalk": "^5.0.1",
     "cli-table": "^0.3.11",
     "commander": "^9.2.0",
+    "concurrently": "^7.1.0",
     "figlet": "^1.5.2",
     "inquirer": "^8.2.3",
+    "nodemon": "^2.0.15",
     "shelljs": "^0.8.5"
   }
 }

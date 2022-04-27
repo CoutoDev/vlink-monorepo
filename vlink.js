@@ -1,8 +1,56 @@
 #!/usr/bin/env node
 
-const { resolve, dirname, relative } = require('path')
+const { resolve, dirname, relative, join } = require('path')
 const { readdir, stat, writeFile, readFile } = require('fs').promises
-const packageFile = './package.json'
+const { program } = require('commander')
+const fs = require('fs')
+const shell = require('shelljs')
+
+const scriptsPath = join(__dirname, 'scripts.json')
+const package = require('./package.json')
+
+const getJson = (path) => {
+  const data = fs.existsSync(path) ? fs.readFileSync(path) : [];
+  try {
+      return JSON.parse(data);
+  } catch (e) {
+      return [];
+  }
+};
+
+const saveJson = (path, data) => fs.writeFileSync(path, JSON.stringify(data, null, '\t'));
+
+program.version(package.version);
+
+program
+  .command('add [vlink]')
+  .description('Link VTEX IO components')
+  .action(async (componentFolder = '.') => {
+    const data = getJson(scriptsPath);
+    const scriptList = [];
+
+    if (componentFolder === '.') {
+      for await (const file of getFiles(componentFolder)) {
+        let relativePath = relative(__dirname, file)
+
+        scriptList.push({
+          vlink: `\"yarn vlink:${relativePath}\"`,
+          vfix: `\"yarn vfix:${relativePath}\"`
+        })
+
+        data.scripts[`vlink:${relativePath}`] = `cd ${relativePath} && vtex link`
+        data.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
+
+        data.scripts.vlink = `concurrently ${concatScripts(scriptList).vlink}`
+        data.scripts.vfix = `concurrently ${concatScripts(scriptList).vfix}`
+      }
+
+      shell.exec(data.scripts.vlink)
+    }
+  });
+
+program.parse(process.argv);
+
 
 async function* getFiles(rootPath) {
   const fileNames = await readdir(rootPath)
@@ -38,24 +86,3 @@ function concatScripts(scriptList) {
     vfix
   }
 }
-
-;(async () => {
-  const scriptList = []
-  const readedPackage = await readFile(packageFile, "utf-8")
-  const jsonPackage = JSON.parse(readedPackage)
-
-  for await (const file of getFiles('.')) {
-    let relativePath = relative(__dirname, file)
-    scriptList.push({
-      vlink: `\"yarn vlink:${relativePath}\"`,
-      vfix: `\"yarn vfix:${relativePath}\"`
-    })
-    jsonPackage.scripts[`vlink:${relativePath}`] = `cd ${relativePath} && vtex link`
-    jsonPackage.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
-
-    jsonPackage.scripts.vlink = `concurrently ${concatScripts(scriptList).vlink}`
-    jsonPackage.scripts.vfix = `concurrently ${concatScripts(scriptList).vfix}`
-  }
-  console.log(jsonPackage)
-  writeFile(packageFile, JSON.stringify(jsonPackage))
-})()
