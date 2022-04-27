@@ -6,32 +6,24 @@ const { program } = require('commander')
 const fs = require('fs')
 const shell = require('shelljs')
 
-const scriptsPath = join(__dirname, 'scripts.json')
 const package = require('./package.json')
-
-const getJson = (path) => {
-  const data = fs.existsSync(path) ? fs.readFileSync(path) : [];
-  try {
-      return JSON.parse(data);
-  } catch (e) {
-      return [];
-  }
-};
-
-const saveJson = (path, data) => fs.writeFileSync(path, JSON.stringify(data, null, '\t'));
 
 program.version(package.version);
 
 program
-  .command('add [vlink]')
+  .command('vlink [componentFolder]')
   .description('Link VTEX IO components')
   .action(async (componentFolder = '.') => {
-    const data = getJson(scriptsPath);
+    const data = {
+      scripts: []
+    };
     const scriptList = [];
 
     if (componentFolder === '.') {
+      console.log(componentFolder);
+
       for await (const file of getFiles(componentFolder)) {
-        let relativePath = relative(__dirname, file)
+        let relativePath = relative(componentFolder, file)
 
         scriptList.push({
           vlink: `\"yarn vlink:${relativePath}\"`,
@@ -41,10 +33,11 @@ program
         data.scripts[`vlink:${relativePath}`] = `cd ${relativePath} && vtex link`
         data.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
 
-        data.scripts.vlink = `concurrently ${concatScripts(scriptList).vlink}`
-        data.scripts.vfix = `concurrently ${concatScripts(scriptList).vfix}`
+        data.scripts.vlink = `yarn concurrently ${concatScripts(scriptList).vlink}`
+        data.scripts.vfix = `yarn concurrently ${concatScripts(scriptList).vfix}`
       }
 
+      console.log(data.scripts.vlink)
       shell.exec(data.scripts.vlink)
     }
   });
