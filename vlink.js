@@ -13,8 +13,7 @@ program.version(package.version);
 program
   .command('link [componentFolder]')
   .description('Link VTEX IO components')
-  .option('-fix, --vfix [vfix]', false, 'Unlink and then link again')
-  .action(async (componentFolder, options) => {
+  .action(async (componentFolder) => {
     const data = {
       scripts: []
     };
@@ -27,21 +26,40 @@ program
 
       scriptList.push({
         vlink: `\"yarn vlink:${relativePath}\"`,
-        vfix: `\"yarn vfix:${relativePath}\"`
       })
 
       data.scripts[`vlink:${relativePath}`] = `cd ${relativePath} && vtex link`
-      data.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
 
       data.scripts.vlink = `yarn concurrently ${concatScripts(scriptList).vlink}`
+    }
+
+    shell.exec(data.scripts.vlink)
+  });
+
+program
+  .command('fix [componentFolder]')
+  .description('Unlink and Link VTEX IO components')
+  .action(async (componentFolder) => {
+    const data = {
+      scripts: []
+    };
+    const scriptList = [];
+
+    componentFolder = componentFolder ?? '.'
+
+    for await (const file of getFiles(componentFolder)) {
+      let relativePath = relative(componentFolder, file)
+
+      scriptList.push({
+        vfix: `\"yarn vfix:${relativePath}\"`
+      })
+
+      data.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
+
       data.scripts.vfix = `yarn concurrently ${concatScripts(scriptList).vfix}`
     }
 
-    if (!options.vfix) {
-      shell.exec(data.scripts.vlink)
-    } else {
-      shell.exec(data.scripts.vfix)
-    }
+    shell.exec(data.scripts.vfix)
   });
 
 program.parse(process.argv);
