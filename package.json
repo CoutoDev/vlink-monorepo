@@ -1,0 +1,17 @@
+{
+  "name": "vlink-monorepo",
+  "version": "0.0.1",
+  "description": "A CLI Tool to help you to manage your linked VTEX IO components on monorepo projects",
+  "main": "vlink.js",
+  "repository": "git@github.com:CoutoDev/vlink-monorepo.git",
+  "author": "CoutoDev",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "cli-table": "^0.3.11",
+    "commander": "^9.2.0",
+    "figlet": "^1.5.2",
+    "inquirer": "^8.2.3",
+    "shelljs": "^0.8.5"
+  }
+}

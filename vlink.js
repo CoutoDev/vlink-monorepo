@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { resolve, dirname, relative } = require('path')
 const { readdir, stat, writeFile, readFile } = require('fs').promises
 const packageFile = './package.json'
