@@ -1196,6 +1196,21 @@ util-deprecate@^1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
+vlink-monorepo@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/vlink-monorepo/-/vlink-monorepo-0.0.5.tgz#17ae90e073ac742939f9795826a86e5f428304b4"
+  integrity sha512-yZGsIGSZ1+fKTjdAY8y96EAMYRY7uyHMWcG6b9aQG9lxau0bYLFvU4nNArMaNUIMtXaybaHmUd4lL3azoEn7Lg==
+  dependencies:
+    chalk "^5.0.1"
+    cli-table "^0.3.11"
+    commander "^9.2.0"
+    concurrently "^7.1.0"
+    figlet "^1.5.2"
+    global "^4.4.0"
+    inquirer "^8.2.3"
+    nodemon "^2.0.15"
+    shelljs "^0.8.5"
+
 wcwidth@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/wcwidth/-/wcwidth-1.0.1.tgz#f0b0dcf915bc5ff1528afadb2c0e17b532da2fe8"

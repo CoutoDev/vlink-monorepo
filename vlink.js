@@ -16,11 +16,11 @@ program
   .action(async (componentFolder) => {
     const scriptList = ['yarn concurrently']
     componentFolder = componentFolder ?? '.'
-
+    
     for await (const file of getFiles(componentFolder)) {
       const relativePath = relative(componentFolder, file)
-
-      scriptList.push(`"cd ${relativePath} && vtex link"`)
+    
+      scriptList.push(`"cd ${relativePath ? relativePath : componentFolder} && vtex link"`)
     }
     shell.exec(scriptList.join(' '))
   });
@@ -35,7 +35,7 @@ program
     for await (const file of getFiles(componentFolder)) {
       const relativePath = relative(componentFolder, file)
 
-      scriptList.push(`"cd ${relativePath} && vtex unlink && vtex link"`)
+      scriptList.push(`"cd ${relativePath ? relativePath : componentFolder} && vtex unlink && vtex link"`)
     }
     shell.exec(scriptList.join(' '))
 

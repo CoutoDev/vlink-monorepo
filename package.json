@@ -18,6 +18,7 @@
     "global": "^4.4.0",
     "inquirer": "^8.2.3",
     "nodemon": "^2.0.15",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "vlink-monorepo": "^0.0.5"
   }
 }
