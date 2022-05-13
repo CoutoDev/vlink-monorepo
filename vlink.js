@@ -8,58 +8,37 @@ const shell = require('shelljs')
 
 const package = require('./package.json')
 
-program.version(package.version);
+program.version(package.version)
 
 program
   .command('link [componentFolder]')
   .description('Link VTEX IO components')
   .action(async (componentFolder) => {
-    const data = {
-      scripts: []
-    };
-    const scriptList = [];
-
+    const scriptList = ['yarn concurrently']
     componentFolder = componentFolder ?? '.'
 
     for await (const file of getFiles(componentFolder)) {
-      let relativePath = relative(componentFolder, file)
+      const relativePath = relative(componentFolder, file)
 
-      scriptList.push({
-        vlink: `\"yarn vlink:${relativePath}\"`,
-      })
-
-      data.scripts[`vlink:${relativePath}`] = `cd ${relativePath} && vtex link`
-
-      data.scripts.vlink = `yarn concurrently ${concatScripts(scriptList).vlink}`
+      scriptList.push(`"cd ${relativePath} && vtex link"`)
     }
-
-    shell.exec(data.scripts.vlink)
+    shell.exec(scriptList.join(' '))
   });
 
 program
   .command('fix [componentFolder]')
   .description('Unlink and Link VTEX IO components')
   .action(async (componentFolder) => {
-    const data = {
-      scripts: []
-    };
-    const scriptList = [];
-
+    const scriptList = ['yarn concurrently']
     componentFolder = componentFolder ?? '.'
 
     for await (const file of getFiles(componentFolder)) {
-      let relativePath = relative(componentFolder, file)
+      const relativePath = relative(componentFolder, file)
 
-      scriptList.push({
-        vfix: `\"yarn vfix:${relativePath}\"`
-      })
-
-      data.scripts[`vfix:${relativePath}`] = `cd ${relativePath} && vtex unlink && vtex link`
-
-      data.scripts.vfix = `yarn concurrently ${concatScripts(scriptList).vfix}`
+      scriptList.push(`"cd ${relativePath} && vtex unlink && vtex link"`)
     }
+    shell.exec(scriptList.join(' '))
 
-    shell.exec(data.scripts.vfix)
   });
 
 program.parse(process.argv);
@@ -82,20 +61,5 @@ async function* getFiles(rootPath) {
         }
       }
     }
-  }
-}
-
-function concatScripts(scriptList) {
-  const vlink = scriptList.reduce((acc, script) => {
-    return acc.concat(' ', script.vlink)
-  }, '')
-
-  const vfix = scriptList.reduce((acc, script) => {
-    return acc.concat(' ', script.vfix)
-  }, '')
-
-  return {
-    vlink,
-    vfix
   }
 }
