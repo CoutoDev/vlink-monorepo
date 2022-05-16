@@ -22,6 +22,7 @@ program
     
       scriptList.push(`"cd ${relativePath ? relativePath : componentFolder} && vtex link"`)
     }
+    if(!shell.find('package.json').length) shell.exec('yarn init --yes')
     shell.exec(scriptList.join(' '))
   });
 
@@ -37,8 +38,8 @@ program
 
       scriptList.push(`"cd ${relativePath ? relativePath : componentFolder} && vtex unlink && vtex link"`)
     }
+    if(!shell.find('package.json').length) shell.exec('yarn init --yes')
     shell.exec(scriptList.join(' '))
-
   });
 
 program.parse(process.argv);
