@@ -17,7 +17,7 @@ Or
 `npm i -g yarn`
 
 ### Install concurrently
-`yarn add global concurrently`
+`npm i -g concurrently`
 
 ### Usage
 
